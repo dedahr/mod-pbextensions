@@ -4,9 +4,9 @@ Although PB can do it itself sometimes there are problems with weapons, fingers 
 
 To make it work player must target bot and bot must be in the party/raid and just use chat command /say.
 
-USAGE
+**USAGE**
 
-/say [slot] [itemLink]
+<mark>/say [slot] [itemLink]</mark>
 
 Slots are:
 
