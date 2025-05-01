@@ -9,7 +9,7 @@
 ########################################
 #
 #    PbExtensions.Enable
-#        Description: Enable my module and print "Hello World" message at server start
+#        Description: Enable module
 #        Default:     0 - Disabled
 #                     1 - Enabled
 #
