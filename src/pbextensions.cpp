@@ -6,6 +6,7 @@
 #include <map>
 #include <string>
 #include "PlayerbotMgr.h"
+#include "Language.h"
 
 static bool IsPlayerBot(Player* player)
 {
@@ -72,14 +73,12 @@ void PbExtensionsScripts::Execute(const std::string& msg, Player* player)
 
     if (botAI)                                                                              //And if is
     {
-       Player* targetPlayer = target->ToPlayer();
-       if (!player->GetGroup())
-       {
+        Player* targetPlayer = target->ToPlayer();
+        if (!player->GetGroup())
         {
-             //player->Say("Bot target is not in the group/raid.", LANG_UNIVERSAL);
-             return;
-         }
-       } 
+            //player->Say("Bot target is not in the group/raid.", LANG_UNIVERSAL);
+            return;
+        }
     }
     else                                                                                    //It's not a bot
     {
@@ -168,7 +167,6 @@ void SendInspectRequest(Player* player, Player* target)
     packet << target->GetGUID();
     player->GetSession()->SendPacket(&packet);
 }
-
 
 // Module registration
 void AddPbExtensionsScripts()
