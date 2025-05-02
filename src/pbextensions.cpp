@@ -17,25 +17,14 @@ static bool IsPlayerBot(Player* player)
     return botAI && botAI->IsBotAI();
 }
 
-static PlayerbotAI* botAI(Player* player) // Correct return type
-{
-    if (!player)
-    {
-        return nullptr; // Should return a pointer, not a boolean
-    }
-
-    PlayerbotAI* botAI = sPlayerbotsMgr->GetPlayerbotAI(player);
-    return botAI;
-}
-
 // Capture player SAY message and make bot equip item in provided slot ie: /say [slot] [itemlink]-> /say mainhand [itemLink]
 // To make it work player have to target bot 1st and bot must be in party/raid
 // [slot] -> head, neck, shoulder, chest, waist, legs, feet, wrist, hands, finger1, finger2, trinket1, trinket2, mainhand, offhand, ranged
 // Usefull for rings, trinkets and weapons (rest PB handles well)
-class PbExtensionsScript : public PlayerScript
+class PbExtensionsScripts : public PlayerScript
 {
 public:
-    PbExtensionsScript() : PlayerScript("PbExtensions", { PLAYERHOOK_ON_CHAT }) {}
+    PbExtensionsScripts() : PlayerScript("PbExtensions", { PLAYERHOOK_ON_CHAT }) {}
 
     void Execute(const std::string& message, Player* player);
     static uint32 parseSlotFromText(const std::string& text);
@@ -56,7 +45,7 @@ private:
 };
 
 // Define slot mappings for equipment
-const std::map<std::string, uint32> PbExtensionsScript::slots = {
+const std::map<std::string, uint32> PbExtensionsScripts::slots = {
     {"head", EQUIPMENT_SLOT_HEAD},
     {"neck", EQUIPMENT_SLOT_NECK},
     {"shoulder", EQUIPMENT_SLOT_SHOULDERS},
@@ -76,19 +65,21 @@ const std::map<std::string, uint32> PbExtensionsScript::slots = {
 };
 
 // Corrected Execute() Definition
-void PbExtensionsScript::Execute(const std::string& msg, Player* player)
+void PbExtensionsScripts::Execute(const std::string& msg, Player* player)
 {
     Player* target = ObjectAccessor::FindPlayer(player->GetTarget());                       //Get player target
     PlayerbotAI* botAI = sPlayerbotsMgr->GetPlayerbotAI(target);                            //Check if taget is a bot
 
     if (botAI)                                                                              //And if is
     {
-        Player* targetPlayer = target->ToPlayer();
-        if (player->GetGroup() && player->GetGroup()->IsMember(targetPlayer->GetGUID()))    // That bot is in player group or raid
+       Player* targetPlayer = target->ToPlayer();
+       if (!player->GetGroup())
+       {
         {
-            player->Say("Bot target is not in the group/raid.", LANG_UNIVERSAL);
-            return;
-        }
+             //player->Say("Bot target is not in the group/raid.", LANG_UNIVERSAL);
+             return;
+         }
+       } 
     }
     else                                                                                    //It's not a bot
     {
@@ -107,7 +98,7 @@ void PbExtensionsScript::Execute(const std::string& msg, Player* player)
 
         if (!item)
         {
-            player->Say("Invalid item.", LANG_UNIVERSAL);
+            //player->Say("Invalid item.", LANG_UNIVERSAL);
             return;
         }
 
@@ -116,7 +107,6 @@ void PbExtensionsScript::Execute(const std::string& msg, Player* player)
         ObjectGuid itemguid = item->GetGUID();
         packet << itemguid << slot;
         botAI->GetBot()->GetSession()->HandleAutoEquipItemSlotOpcode(packet);
-
         // Let bot notify you
         const ItemTemplate* itemProto = item->GetTemplate();
         std::ostringstream out;
@@ -130,7 +120,7 @@ void PbExtensionsScript::Execute(const std::string& msg, Player* player)
 }
 
 // Function to parse item IDs from chat message
-ItemIds PbExtensionsScript::parseItems(const std::string& text)
+ItemIds PbExtensionsScripts::parseItems(const std::string& text)
 {
     ItemIds itemIds;
     size_t pos = 0;
@@ -157,9 +147,9 @@ ItemIds PbExtensionsScript::parseItems(const std::string& text)
 }
 
 // Function to parse slot from chat command
-uint32 PbExtensionsScript::parseSlotFromText(const std::string& text)
+uint32 PbExtensionsScripts::parseSlotFromText(const std::string& text)
 {
-    for (auto const& pair : PbExtensionsScript::slots)
+    for (auto const& pair : PbExtensionsScripts::slots)
     {
         if (text.find(pair.first) != std::string::npos)                                 // Check if slot name exists in text
         {
@@ -183,5 +173,5 @@ void SendInspectRequest(Player* player, Player* target)
 // Module registration
 void AddPbExtensionsScripts()
 {
-    new PbExtensionsScript();
+    new PbExtensionsScripts();
 }
