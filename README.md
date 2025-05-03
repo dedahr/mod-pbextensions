@@ -1,4 +1,4 @@
-This is Azeroth Core module which adds simple SAY commands to playerbots module for equiping items into desired slot.
+This is Azeroth Core module which adds simple SAY commands to [Playerbots](https://github.com/liyunfan1223/mod-playerbots) module for equiping items into desired slot.
 
 Although PB can do it itself sometimes there are problems with weapons, fingers or trinkets as it doesn't target specific slot for those items.
 
