@@ -8,16 +8,6 @@
 #include "PlayerbotMgr.h"
 #include "Language.h"
 
-static bool IsPlayerBot(Player* player)
-{
-    if (!player)
-    {
-        return false;
-    }
-    PlayerbotAI* botAI = sPlayerbotsMgr->GetPlayerbotAI(player);
-    return botAI && botAI->IsBotAI();
-}
-
 // Capture player SAY message and make bot equip item in provided slot ie: /say [slot] [itemlink]-> /say mainhand [itemLink]
 // To make it work player have to target bot 1st and bot must be in party/raid
 // [slot] -> head, neck, shoulder, chest, waist, legs, feet, wrist, hands, finger1, finger2, trinket1, trinket2, mainhand, offhand, ranged
@@ -74,15 +64,15 @@ void PbExtensionsScripts::Execute(const std::string& msg, Player* player)
     if (botAI)                                                                              //And if is
     {
         Player* targetPlayer = target->ToPlayer();
-        if (!player->GetGroup())
+        if (!player->GetGroup())                                                            //Be sure that it is in player grp or raid
         {
-            //player->Say("Bot target is not in the group/raid.", LANG_UNIVERSAL);
+            //ChatHandler(player->GetSession()).PSendSysMessage("PbExtensions: Bot target is not in the group/raid.");
             return;
         }
     }
     else                                                                                    //It's not a bot
     {
-        //player->Say("Target is not a bot.", LANG_UNIVERSAL);
+        //ChatHandler(player->GetSession()).PSendSysMessage("PbExtensions: Target is not a bot.");
         return;
     }
 
@@ -97,7 +87,7 @@ void PbExtensionsScripts::Execute(const std::string& msg, Player* player)
 
         if (!item)
         {
-            //player->Say("Invalid item.", LANG_UNIVERSAL);
+            //ChatHandler(player->GetSession()).PSendSysMessage("PbExtensions: Invalid item.");
             return;
         }
 
@@ -156,16 +146,6 @@ uint32 PbExtensionsScripts::parseSlotFromText(const std::string& text)
         }
     }
     return EQUIPMENT_SLOT_END;                                                          // Default if no match is found
-}
-
-void SendInspectRequest(Player* player, Player* target)
-{
-    if (!player || !target)
-        return;
-
-    WorldPacket packet(CMSG_INSPECT, 8);
-    packet << target->GetGUID();
-    player->GetSession()->SendPacket(&packet);
 }
 
 // Module registration
