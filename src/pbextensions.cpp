@@ -7,6 +7,7 @@
 #include <string>
 #include "PlayerbotMgr.h"
 #include "Language.h"
+#include "ItemPackets.h"
 
 // Capture player SAY message and make bot equip item in provided slot ie: /say [slot] [itemlink]-> /say mainhand [itemLink]
 // To make it work player have to target bot 1st and bot must be in party/raid
@@ -95,7 +96,10 @@ void PbExtensionsScripts::Execute(const std::string& msg, Player* player)
         WorldPacket packet(CMSG_AUTOEQUIP_ITEM_SLOT, 2);
         ObjectGuid itemguid = item->GetGUID();
         packet << itemguid << slot;
-        botAI->GetBot()->GetSession()->HandleAutoEquipItemSlotOpcode(packet);
+        WorldPackets::Item::AutoEquipItemSlot nicePacket(std::move(packet));
+        nicePacket.Read();
+        botAI->GetBot()->GetSession()->HandleAutoEquipItemSlotOpcode(nicePacket);
+
         // Let bot notify you
         const ItemTemplate* itemProto = item->GetTemplate();
         std::ostringstream out;
