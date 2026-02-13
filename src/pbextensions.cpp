@@ -21,7 +21,8 @@ public:
     void Execute(const std::string& message, Player* player);
     static uint32 parseSlotFromText(const std::string& text);
     static ItemIds parseItems(const std::string& text);
-    void OnPlayerChat(Player* player, uint32 type, uint32/* lang*/, std::string& msg) override
+    //void OnPlayerChat(Player* player, uint32 type, uint32/* lang*/, std::string& msg) override
+    void OnPlayerBeforeSendChatMessage(Player* player, uint32& type, uint32& /*lang*/, std::string& msg) override
     {
         if (type == ChatMsg::CHAT_MSG_SAY)
         {
@@ -36,31 +37,12 @@ private:
     static const std::map<std::string, uint32> slots;
 };
 
-// Define slot mappings for equipment
-const std::map<std::string, uint32> PbExtensionsScripts::slots = {
-    {"head", EQUIPMENT_SLOT_HEAD},
-    {"neck", EQUIPMENT_SLOT_NECK},
-    {"shoulder", EQUIPMENT_SLOT_SHOULDERS},
-    {"chest", EQUIPMENT_SLOT_CHEST},
-    {"waist", EQUIPMENT_SLOT_WAIST},
-    {"legs", EQUIPMENT_SLOT_LEGS},
-    {"feet", EQUIPMENT_SLOT_FEET},
-    {"wrist", EQUIPMENT_SLOT_WRISTS},
-    {"hands", EQUIPMENT_SLOT_HANDS},
-    {"finger1", EQUIPMENT_SLOT_FINGER1},
-    {"finger2", EQUIPMENT_SLOT_FINGER2},
-    {"trinket1", EQUIPMENT_SLOT_TRINKET1},
-    {"trinket2", EQUIPMENT_SLOT_TRINKET2},
-    {"mainhand", EQUIPMENT_SLOT_MAINHAND},
-    {"offhand", EQUIPMENT_SLOT_OFFHAND},
-    {"ranged", EQUIPMENT_SLOT_RANGED}
-};
-
 // Corrected Execute() Definition
 void PbExtensionsScripts::Execute(const std::string& msg, Player* player)
 {
     Player* target = ObjectAccessor::FindPlayer(player->GetTarget());                       //Get player target
-    PlayerbotAI* botAI = sPlayerbotsMgr->GetPlayerbotAI(target);                            //Check if taget is a bot
+    /*PlayerbotAI* botAI = sPlayerbotsMgr->GetPlayerbotAI(target); */                       //Check if taget is a bot
+    PlayerbotAI* botAI = GET_PLAYERBOT_AI(target);                                          //Check if taget is a bot
 
     if (botAI)                                                                              //And if is
     {
@@ -157,3 +139,23 @@ void AddPbExtensionsScripts()
 {
     new PbExtensionsScripts();
 }
+
+// Define slot mappings for equipment
+const std::map<std::string, uint32> PbExtensionsScripts::slots = {
+    {"head", EQUIPMENT_SLOT_HEAD},
+    {"neck", EQUIPMENT_SLOT_NECK},
+    {"shoulder", EQUIPMENT_SLOT_SHOULDERS},
+    {"chest", EQUIPMENT_SLOT_CHEST},
+    {"waist", EQUIPMENT_SLOT_WAIST},
+    {"legs", EQUIPMENT_SLOT_LEGS},
+    {"feet", EQUIPMENT_SLOT_FEET},
+    {"wrist", EQUIPMENT_SLOT_WRISTS},
+    {"hands", EQUIPMENT_SLOT_HANDS},
+    {"finger1", EQUIPMENT_SLOT_FINGER1},
+    {"finger2", EQUIPMENT_SLOT_FINGER2},
+    {"trinket1", EQUIPMENT_SLOT_TRINKET1},
+    {"trinket2", EQUIPMENT_SLOT_TRINKET2},
+    {"mainhand", EQUIPMENT_SLOT_MAINHAND},
+    {"offhand", EQUIPMENT_SLOT_OFFHAND},
+    {"ranged", EQUIPMENT_SLOT_RANGED}
+};
