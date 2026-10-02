@@ -16,17 +16,20 @@
 class PbExtensionsScripts : public PlayerScript
 {
 public:
-    PbExtensionsScripts() : PlayerScript("PbExtensions", { PLAYERHOOK_ON_CHAT }) {}
+    // FIX: Removed the { PLAYERHOOK_ON_CHAT } filter array from the constructor
+    PbExtensionsScripts() : PlayerScript("PbExtensions") {}
 
     void Execute(const std::string& message, Player* player);
     static uint32 parseSlotFromText(const std::string& text);
     static ItemIds parseItems(const std::string& text);
-    //void OnPlayerChat(Player* player, uint32 type, uint32/* lang*/, std::string& msg) override
+
+    // Modern AzerothCore signature for hook interception before message transmission
     void OnPlayerBeforeSendChatMessage(Player* player, uint32& type, uint32& /*lang*/, std::string& msg) override
     {
         if (type == ChatMsg::CHAT_MSG_SAY)
         {
-            if (player->GetGUID() == player->GetSession()->GetPlayer()->GetGUID())             // Capture only our Say
+            // Cleaned up validation safety
+            if (player && player->GetSession() && player->GetGUID() == player->GetSession()->GetPlayer()->GetGUID())
             {
                 Execute(msg, player);
             }
